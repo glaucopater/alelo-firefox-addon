@@ -708,7 +708,7 @@
   min-width: 180px;
 }
 
-.alelo-lang-picker-trigger {
+#alelo-overlay .alelo-lang-picker-trigger {
   width: 100%;
   text-align: left;
   display: flex;
@@ -718,9 +718,10 @@
   color: #111;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   min-height: 44px;
+  line-height: 1.4;
 }
 
 .alelo-lang-picker-trigger:disabled {
@@ -753,40 +754,52 @@
   flex-shrink: 0;
 }
 
-.alelo-lang-picker-menu {
+#alelo-overlay .alelo-lang-picker-menu {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
   right: 0;
+  width: 100%;
   max-height: 220px;
   overflow-y: auto;
   background: white;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   z-index: 10;
   list-style: none;
   margin: 0;
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
-.alelo-lang-picker-option {
+#alelo-overlay .alelo-lang-picker-option {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: nowrap;
   padding: 10px 14px;
   font-size: 13px;
   cursor: pointer;
   min-height: 44px;
 }
 
-.alelo-lang-picker-option:hover,
-.alelo-lang-picker-option.alelo-selected {
+#alelo-overlay .alelo-lang-picker-option .alelo-lang-chip {
+  flex: 1;
+  min-width: 0;
+}
+
+#alelo-overlay .alelo-lang-picker-option .alelo-favorite-code {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+#alelo-overlay .alelo-lang-picker-option:hover,
+#alelo-overlay .alelo-lang-picker-option.alelo-selected {
   background: #f0f4ff;
 }
 
-.alelo-lang-picker-empty {
-  padding: 8px 10px;
+#alelo-overlay .alelo-lang-picker-empty {
+  padding: 10px 14px;
   font-size: 12px;
   color: #666;
 }
