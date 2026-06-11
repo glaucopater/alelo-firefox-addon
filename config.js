@@ -117,41 +117,31 @@ function normalizeConfig(config) {
   };
 }
 
-function getStoredConfig() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([CONFIG_STORAGE_KEY], (result) => {
-      const stored = result[CONFIG_STORAGE_KEY] || {};
-      const normalized = normalizeConfig({ ...DEFAULT_CONFIG, ...stored });
+async function getStoredConfig() {
+  const result = await browser.storage.local.get([CONFIG_STORAGE_KEY]);
+  const stored = result[CONFIG_STORAGE_KEY] || {};
+  const normalized = normalizeConfig({ ...DEFAULT_CONFIG, ...stored });
 
-      if ((stored.configVersion ?? 1) < CURRENT_CONFIG_VERSION) {
-        chrome.storage.local.set({ [CONFIG_STORAGE_KEY]: normalized }, () => resolve(normalized));
-        return;
-      }
+  if ((stored.configVersion ?? 1) < CURRENT_CONFIG_VERSION) {
+    await browser.storage.local.set({ [CONFIG_STORAGE_KEY]: normalized });
+  }
 
-      resolve(normalized);
-    });
-  });
+  return normalized;
 }
 
-function saveStoredConfig(config) {
+async function saveStoredConfig(config) {
   const normalized = normalizeConfig(config);
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ [CONFIG_STORAGE_KEY]: normalized }, () => resolve(normalized));
-  });
+  await browser.storage.local.set({ [CONFIG_STORAGE_KEY]: normalized });
+  return normalized;
 }
 
-function getStoredHistory() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([HISTORY_STORAGE_KEY], (result) => {
-      resolve(result[HISTORY_STORAGE_KEY] || []);
-    });
-  });
+async function getStoredHistory() {
+  const result = await browser.storage.local.get([HISTORY_STORAGE_KEY]);
+  return result[HISTORY_STORAGE_KEY] || [];
 }
 
-function saveStoredHistory(history) {
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ [HISTORY_STORAGE_KEY]: history }, resolve);
-  });
+async function saveStoredHistory(history) {
+  await browser.storage.local.set({ [HISTORY_STORAGE_KEY]: history });
 }
 
 async function addHistoryEntry(entry) {

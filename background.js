@@ -134,7 +134,7 @@ function formatErrorMessage(error, context = {}) {
 }
 
 async function injectContentScript(tabId) {
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     files: ["constants.js", "language-flags.js", "content.js"]
   });
@@ -142,7 +142,7 @@ async function injectContentScript(tabId) {
 
 async function showLoading(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -155,7 +155,7 @@ async function showLoading(tabId, payload) {
 
 async function showPartialResult(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -168,7 +168,7 @@ async function showPartialResult(tabId, payload) {
 
 async function showResult(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -181,7 +181,7 @@ async function showResult(tabId, payload) {
 
 async function showError(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -194,7 +194,7 @@ async function showError(tabId, payload) {
 
 async function updateSourceLanguage(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -207,7 +207,7 @@ async function updateSourceLanguage(tabId, payload) {
 
 async function showComposer(tabId, payload) {
   await injectContentScript(tabId);
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     target: { tabId },
     func: (data, hookName) => {
       if (window[hookName]) {
@@ -220,7 +220,7 @@ async function showComposer(tabId, payload) {
 
 async function getTabSelectionText(tabId) {
   try {
-    const [result] = await chrome.scripting.executeScript({
+    const [result] = await browser.scripting.executeScript({
       target: { tabId },
       func: () => window.getSelection()?.toString() || ""
     });
@@ -555,9 +555,9 @@ async function translateLanguages(tabId, sourceText, targetLanguages, pageUrl) {
 }
 
 async function rebuildContextMenus() {
-  await new Promise((resolve) => chrome.contextMenus.removeAll(resolve));
+  await browser.contextMenus.removeAll();
 
-  chrome.contextMenus.create({
+  browser.contextMenus.create({
     id: CONTEXT_MENU_PARENT_ID,
     title: CONTEXT_MENU_TITLE,
     contexts: ["selection"]
@@ -567,7 +567,7 @@ async function rebuildContextMenus() {
   const favorites = config.favoriteLanguages;
 
   if (favorites.length > 1) {
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
       id: CONTEXT_MENU_ALL_FAVORITES_ID,
       parentId: CONTEXT_MENU_PARENT_ID,
       title: CONTEXT_MENU_ALL_FAVORITES_TITLE,
@@ -576,7 +576,7 @@ async function rebuildContextMenus() {
   }
 
   for (const lang of favorites) {
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
       id: languageMenuId(lang.code),
       parentId: CONTEXT_MENU_PARENT_ID,
       title: lang.label,
@@ -590,13 +590,13 @@ async function initializeExtension() {
   await rebuildContextMenus();
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(() => {
   initializeExtension();
 });
 
 initializeExtension();
 
-chrome.action.onClicked.addListener(async (tab) => {
+browser.action.onClicked.addListener(async (tab) => {
   if (!tab?.id) return;
 
   const pageUrl = tab.url || "";
@@ -616,7 +616,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!tab?.id) return;
 
   const config = await getStoredConfig();
@@ -639,7 +639,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   await translateLanguages(tab.id, info.selectionText, [targetLanguage], tab.url || "");
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === MESSAGE_ACTION.RETRY_TRANSLATION) {
     const tabId = sender.tab?.id;
     const { sourceText, targetLanguages, pageUrl } = message;

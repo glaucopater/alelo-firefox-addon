@@ -30,7 +30,7 @@ Parallel translation to multiple favorite languages at once:
   - **Settings** (⚙) — configure API URL, model, auth token, and **favorite languages**
 - **Page source tracking** — history records where each translation was found (web page URL when available).
 - **Friendly error messages** when the API is unreachable or the model is missing.
-- **Persistent settings and history** via `chrome.storage.local`.
+- **Persistent settings and history** via the extension `storage` API.
 
 ## How it works
 
@@ -130,7 +130,7 @@ After saving, the right-click submenu updates automatically.
 ### History
 
 - Every successful translation is saved automatically (source text, translation, target language, page URL, raw JSON).
-- History is stored in **`chrome.storage.local`** — global across all websites and tabs.
+- History is stored in **local extension storage** — global across all websites and tabs.
 - Up to **30** entries are kept (newest first).
 - On translation failure, the history panel opens automatically if previous results exist.
 
@@ -164,7 +164,7 @@ Selected text is sent only to the chat endpoint you configure (by default, your 
 | Path | Role |
 |------|------|
 | `manifest.json` | MV3 manifest, permissions, web-accessible resources |
-| `service-worker.js` | Background script — context menu, translation API call, orchestration |
+| `background.js` | Context menu, translation API call, orchestration |
 | `config.js` | Default config, language presets, settings/history storage |
 | `content.js` | Modal UI, translation display, history, settings |
 | `content.html` / `content.css` | Modal markup and styles |

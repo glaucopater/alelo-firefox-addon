@@ -309,7 +309,7 @@
         if (!flagLoadPromises.has(cacheKey)) {
           flagLoadPromises.set(
             cacheKey,
-            chrome.runtime
+            browser.runtime
               .sendMessage({
                 action: MESSAGE_ACTION.GET_FLAG_IMAGE,
                 langCode: code,
@@ -684,7 +684,7 @@
 
     let favorites = [];
     try {
-      const response = await chrome.runtime.sendMessage({ action: MESSAGE_ACTION.GET_CONFIG });
+      const response = await browser.runtime.sendMessage({ action: MESSAGE_ACTION.GET_CONFIG });
       favorites = response?.ok ? response.config?.favoriteLanguages || [] : [];
     } catch {
       favorites = [];
@@ -740,10 +740,10 @@
   }
 
   function bindHistoryStorageSync() {
-    if (!chrome.storage?.onChanged || window[CONTENT_GLOBAL.HISTORY_SYNC]) return;
+    if (!browser.storage?.onChanged || window[CONTENT_GLOBAL.HISTORY_SYNC]) return;
     window[CONTENT_GLOBAL.HISTORY_SYNC] = true;
 
-    chrome.storage.onChanged.addListener((changes, area) => {
+    browser.storage.onChanged.addListener((changes, area) => {
       if (area !== "local" || !changes[HISTORY_STORAGE_KEY]) return;
       historyEntries = changes[HISTORY_STORAGE_KEY].newValue || [];
       updateHistoryBadge();
@@ -755,7 +755,7 @@
 
   async function fetchHistory() {
     try {
-      const response = await chrome.runtime.sendMessage({ action: MESSAGE_ACTION.GET_HISTORY });
+      const response = await browser.runtime.sendMessage({ action: MESSAGE_ACTION.GET_HISTORY });
       historyEntries = response?.ok ? response.history || [] : [];
     } catch {
       historyEntries = [];
@@ -782,7 +782,7 @@
     };
 
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await browser.runtime.sendMessage({
         action: MESSAGE_ACTION.SAVE_HISTORY_ENTRY,
         entry: payload
       });
@@ -913,7 +913,7 @@
 
   async function removeHistoryEntry(id) {
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await browser.runtime.sendMessage({
         action: MESSAGE_ACTION.REMOVE_HISTORY_ENTRY,
         id
       });
@@ -929,7 +929,7 @@
 
   async function clearHistory() {
     try {
-      const response = await chrome.runtime.sendMessage({ action: MESSAGE_ACTION.CLEAR_HISTORY });
+      const response = await browser.runtime.sendMessage({ action: MESSAGE_ACTION.CLEAR_HISTORY });
       if (response?.ok) {
         historyEntries = [];
         updateHistoryBadge();
@@ -1188,7 +1188,7 @@
   async function loadCssIntoShadow(shadowRoot) {
     if (cssLoaded) return;
 
-    const url = chrome.runtime.getURL("content.css");
+    const url = browser.runtime.getURL("content.css");
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to load content.css: HTTP ${response.status}`);
@@ -1201,7 +1201,7 @@
   }
 
   async function loadHtmlTemplate() {
-    const url = chrome.runtime.getURL("content.html");
+    const url = browser.runtime.getURL("content.html");
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to load content.html: HTTP ${response.status}`);
@@ -1356,7 +1356,7 @@
     setModelsStatus("Loading models…");
 
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await browser.runtime.sendMessage({
         action: MESSAGE_ACTION.FETCH_MODELS,
         apiUrl,
         authToken: configAuthToken?.value.trim() || ""
@@ -1387,7 +1387,7 @@
 
   async function loadConfigIntoForm() {
     try {
-      const response = await chrome.runtime.sendMessage({ action: MESSAGE_ACTION.GET_CONFIG });
+      const response = await browser.runtime.sendMessage({ action: MESSAGE_ACTION.GET_CONFIG });
       if (response?.ok && response.config) {
         configApiUrl.value = response.config.apiUrl || "";
         configAuthToken.value = response.config.authToken || "";
@@ -1430,7 +1430,7 @@
     }
 
     try {
-      const response = await chrome.runtime.sendMessage({ action: MESSAGE_ACTION.SAVE_CONFIG, config });
+      const response = await browser.runtime.sendMessage({ action: MESSAGE_ACTION.SAVE_CONFIG, config });
       if (response?.ok) {
         storedModelInfo = response.config?.modelInfo || null;
         draftFavoriteLanguages = (response.config?.favoriteLanguages || draftFavoriteLanguages).map((lang) => ({
@@ -1475,7 +1475,7 @@
     activateTab("formatted");
 
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await browser.runtime.sendMessage({
         action: MESSAGE_ACTION.RETRY_TRANSLATION,
         sourceText: lastSourceText,
         targetLanguages: lastRequestedLanguages,
@@ -1654,7 +1654,7 @@
 
     if (versionEl) {
       try {
-        versionEl.textContent = `Version ${chrome.runtime.getManifest().version}`;
+        versionEl.textContent = `Version ${browser.runtime.getManifest().version}`;
       } catch {
         versionEl.textContent = "";
       }
